@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.skyflygame.net.idrok.muhandislik"
+    namespace = "net.idrok.muhandislik"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.skyflygame.net.idrok.muhandislik"
+        applicationId = "net.idrok.muhandislik"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -66,4 +66,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.navigation.compose)
 }

@@ -1,4 +1,4 @@
-package com.skyflygame.net.idrok.muhandislik.ui.theme
+package net.idrok.muhandislik.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
