@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,13 +48,13 @@ class MainActivity : ComponentActivity() {
             MuhandislikQollanmaTheme {
                 val navController = rememberNavController()
                 NavHost(navController, "loading") {
-                    composable("loading"){
+                    composable("loading") {
                         Loading {
                             navController.navigate("main")
                         }
                     }
 
-                    composable("main"){
+                    composable("main") {
                         MainScreen()
                     }
                     composable("articles") {
@@ -75,15 +76,19 @@ fun Loading(
         delay(1000)
         onNext()
     }
-    Column(
+    Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-    ) {
+
+    )
+    {
         CircularProgressIndicator(
             color = Color.Blue
         )
     }
+
 }
 
 
