@@ -19,40 +19,35 @@ import androidx.compose.ui.unit.sp
 
 
 
-@Preview
+
 @Composable
-fun ArticleListScreen() {
+fun ArticleListScreen(arr: List<Article>,title:String ,onArticleSelect:(Int) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        TopBar()
 
-        // Список статей
-        val articles = listOf(
-            Article("Football Tactics", R.drawable.foot1),
-            Article("Top Football Players", R.drawable.foot2),
-            Article("Championship Highlights", R.drawable.foot3),
-            Article("Football Strategies", R.drawable.foot4)
-        )
+        TopBar(title)
+
+
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
-            items(articles) { article ->
-                ArticleItem(article = article, onClick = {
+            items(arr) { article ->
+                ArticleItem(article = article, onClick = {onArticleSelect(article.id)
 
                 })
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(title: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,7 +68,7 @@ fun TopBar() {
 
         // Заголовок рядом с иконкой меню
         Text(
-            text = "Football",
+            text = title,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
@@ -105,4 +100,5 @@ fun ArticleItem(article: Article, onClick: () -> Unit) {
         )
     }
 }
-data class Article(val title: String, val imageRes: Int)
+data class Article(val id: Int, val title: String, val imageRes: Int, val description: String)
+

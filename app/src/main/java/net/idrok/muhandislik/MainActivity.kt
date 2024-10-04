@@ -33,9 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
+import androidx.navigation.NavType.Companion.IntType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import kotlinx.coroutines.delay
 
 import net.idrok.muhandislik.ui.theme.MuhandislikQollanmaTheme
@@ -50,15 +53,47 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController, "loading") {
                     composable("loading") {
                         Loading {
-                            navController.navigate("main")
+                            navController.navigate("main"){
+                                popUpTo("loading"){inclusive = true}
+                            }
                         }
                     }
-
                     composable("main") {
-                        MainScreen()
+                        MainScreen(
+                            onB = {
+                                navController.navigate("articlesB"){
+                                    popUpTo("main")
+                                }
+                            },
+                            onF = {
+                                navController.navigate("articlesF"){
+                                    popUpTo("main")
+
+                                }
+                            }
+                        )
                     }
-                    composable("articles") {
-                        ArticleListScreen()
+                    composable("articlesF") {
+                        ArticleListScreen(articlesF,"Football", onArticleSelect = {
+                            article ->
+                            navController.navigate("articleF/$article")
+                        })
+                    }
+                    composable("articleF/{article}", arguments = listOf(navArgument("article") { type = IntType })) {
+                        val article = it.arguments?.getInt("article") ?: 0
+                        val articleName = articlesF[article].id
+                        ArticleScreen(articlesF[articleName-2])
+                    }
+                    composable("articlesB") {
+                        ArticleListScreen(articlesB,"Basketball",onArticleSelect = {
+                                article ->
+                            navController.navigate("articleB/$article")
+                        })
+                    }
+                    composable("articleB/{article}", arguments = listOf(navArgument("article") { type = IntType })) {
+                        val article = it.arguments?.getInt("article") ?: 0
+                        val articleName = articlesB[article].id
+                        ArticleScreen(articlesB[articleName-2])
                     }
 
                 }
@@ -92,9 +127,9 @@ fun Loading(
 }
 
 
-@Preview
+
 @Composable
-fun MainScreen() {
+fun MainScreen(onF: () -> Unit,onB: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
@@ -154,14 +189,14 @@ fun MainScreen() {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 ImageWithTitle(
-                    imageRes = R.drawable.basket1,
+                    imageRes = R.drawable.basket,
                     title = "1 TEXT",
-                    onClick = {}
+                    onClick = {onB() }
                 )
                 ImageWithTitle(
-                    imageRes = R.drawable.basket2,
+                    imageRes = R.drawable.football,
                     title = "2 TEXT",
-                    onClick = {}
+                    onClick = {onF() }
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
