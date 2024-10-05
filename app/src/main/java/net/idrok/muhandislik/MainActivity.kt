@@ -2,6 +2,7 @@ package net.idrok.muhandislik
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,48 +54,141 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController, "loading") {
                     composable("loading") {
                         Loading {
-                            navController.navigate("main"){
-                                popUpTo("loading"){inclusive = true}
+                            navController.navigate("main") {
+                                popUpTo("loading") { inclusive = true }
                             }
                         }
                     }
                     composable("main") {
                         MainScreen(
                             onB = {
-                                navController.navigate("articlesB"){
-                                    popUpTo("main")
+                                navController.navigate("articlesB") {
+                                    popUpTo("loading") { inclusive = true
+                                        savedInstanceState?.clear()}
                                 }
                             },
                             onF = {
-                                navController.navigate("articlesF"){
-                                    popUpTo("main")
+                                navController.navigate("articlesF") {
+                                    popUpTo("loading") { inclusive = true
+                                        savedInstanceState?.clear()}
 
+                                }
+                            },
+                            onH = {
+                                navController.navigate("articlesH") {
+                                    popUpTo("loading") { inclusive = true
+                                        savedInstanceState?.clear()}
+                                }
+                            },
+                            onV = {
+                                navController.navigate("articlesV") {
+                                    popUpTo("loading") { inclusive = true
+                                        savedInstanceState?.clear()}
                                 }
                             }
                         )
                     }
                     composable("articlesF") {
-                        ArticleListScreen(articlesF,"Football", onArticleSelect = {
-                            article ->
-                            navController.navigate("articleF/$article")
+                        ArticleListScreen(articlesF, "Football", onArticleSelect = { article ->
+                            navController.navigate("articleF/$article") {
+                                popUpTo("articlesF") {
+                                 //   inclusive = true
+                                //savedInstanceState?.clear()
+                                }
+                            }
                         })
                     }
-                    composable("articleF/{article}", arguments = listOf(navArgument("article") { type = IntType })) {
+                    composable(
+                        "articleF/{article}",
+                        arguments = listOf(navArgument("article") { type = IntType })
+                    ) {
                         val article = it.arguments?.getInt("article") ?: 0
                         val articleName = articlesF[article].id
-                        ArticleScreen(articlesF[articleName-2])
-                    }
-                    composable("articlesB") {
-                        ArticleListScreen(articlesB,"Basketball",onArticleSelect = {
-                                article ->
-                            navController.navigate("articleB/$article")
+                        ArticleScreen(articlesF[articleName ], onHome = {
+                            navController.navigate("main") {
+                                popUpTo("articleF/$article") {
+                                    inclusive = true
+                                    //savedInstanceState?.clear()
+                                }
+                            }
                         })
                     }
-                    composable("articleB/{article}", arguments = listOf(navArgument("article") { type = IntType })) {
+                    composable("articlesB") {
+                        ArticleListScreen(articlesB, "Basketball", onArticleSelect = { article ->
+                            navController.navigate("articleB/$article") {
+                                popUpTo("articlesB") {
+                                 //   inclusive = true
+                                //    savedInstanceState?.clear()
+                                }
+                            }
+                        })
+                    }
+                    composable(
+                        "articleB/{article}",
+                        arguments = listOf(navArgument("article") { type = IntType })
+                    ) {
                         val article = it.arguments?.getInt("article") ?: 0
                         val articleName = articlesB[article].id
-                        ArticleScreen(articlesB[articleName-2])
+                        ArticleScreen(articlesB[articleName ], onHome = {
+                            navController.navigate("main") {
+                                popUpTo("articleB/$article") {
+                                    inclusive = true
+                                   // savedInstanceState?.clear()
+                                }
+                            }
+                        })
                     }
+                    composable("articlesV") {
+                        ArticleListScreen(articlesV, "Volleyball", onArticleSelect = { article ->
+                            navController.navigate("articleV/$article") {
+                                popUpTo("articlesV") {
+                                    //inclusive = true
+                                 //   savedInstanceState?.clear()
+                                }
+                            }
+                        })
+                    }
+                    composable("articlesH") {
+                        ArticleListScreen(articlesH, "Hockey", onArticleSelect = { article ->
+                            navController.navigate("articleH/$article") {
+                                popUpTo("articlesH") {
+                                    //inclusive = true
+                                  //  savedInstanceState?.clear()
+                                }
+                            }
+                        })
+                    }
+                    composable(
+                        "articleH/{article}",
+                        arguments = listOf(navArgument("article") { type = IntType })
+                    ) {
+                        val article = it.arguments?.getInt("article") ?: 0
+                        val articleName = articlesH[article].id
+                        ArticleScreen(articlesH[articleName ], onHome = {
+                            navController.navigate("main") {
+                                popUpTo("articleH/$article") {
+                                    inclusive = true
+                                   // savedInstanceState?.clear()
+                                }
+                            }
+                        })
+                    }
+                    composable(
+                        "articleV/{article}",
+                        arguments = listOf(navArgument("article") { type = IntType })
+                    ) {
+                        val article = it.arguments?.getInt("article") ?: 0
+                        val articleName = articlesV[article].id
+                        ArticleScreen(articlesV[articleName ], onHome = {
+                            navController.navigate("main") {
+                                popUpTo("articleV/$article") {
+                                    inclusive = true
+                                   // savedInstanceState?.clear()
+                                }
+                            }
+                        })
+                    }
+
 
                 }
             }
@@ -127,9 +221,11 @@ fun Loading(
 }
 
 
-
 @Composable
-fun MainScreen(onF: () -> Unit,onB: () -> Unit) {
+fun MainScreen(onF: () -> Unit, onB: () -> Unit, onV: () -> Unit, onH: () -> Unit) {
+    BackHandler {
+        // Пустое тело, что запрещает закрытие приложения по кнопке "Назад"
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
@@ -140,28 +236,13 @@ fun MainScreen(onF: () -> Unit,onB: () -> Unit) {
                 .fillMaxWidth()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.Center
         ) {
 
-            Image(
-                painter = painterResource(id = R.drawable.menu_svgrepo_com), // Используйте свою иконку меню
-                contentDescription = "Menu",
-                modifier = Modifier
-                    .size(44.dp)
-                    .clickable {
-
-                    }
-            )
 
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "Muhandislik qo'llanma",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    modifier = Modifier
-                )
+
 
                 Text(
                     text = "Sport rahbariyati",
@@ -190,13 +271,13 @@ fun MainScreen(onF: () -> Unit,onB: () -> Unit) {
             ) {
                 ImageWithTitle(
                     imageRes = R.drawable.basket,
-                    title = "1 TEXT",
-                    onClick = {onB() }
+                    title = "Basketball",
+                    onClick = { onB() }
                 )
                 ImageWithTitle(
                     imageRes = R.drawable.football,
-                    title = "2 TEXT",
-                    onClick = {onF() }
+                    title = "Football",
+                    onClick = { onF() }
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -205,14 +286,14 @@ fun MainScreen(onF: () -> Unit,onB: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 ImageWithTitle(
-                    imageRes = R.drawable.basket3,
-                    title = "3 TEXT",
-                    onClick = {}
+                    imageRes = R.drawable.hokkei,
+                    title = "Hockey",
+                    onClick = { onH() }
                 )
                 ImageWithTitle(
-                    imageRes = R.drawable.basket4,
-                    title = "4 TEXT",
-                    onClick = {}
+                    imageRes = R.drawable.voleiball,
+                    title = "Volleyball",
+                    onClick = { onV() }
                 )
             }
         }

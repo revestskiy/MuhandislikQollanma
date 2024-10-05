@@ -20,14 +20,14 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun ArticleScreen(article: Article) {
+fun ArticleScreen(article: Article, onHome: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        TopBarWithHome(article.title)
+        TopBarWithHome(article.title, onHome )
 
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -49,7 +49,7 @@ fun ArticleScreen(article: Article) {
 }
 
 @Composable
-fun TopBarWithHome(title: String) {
+fun TopBarWithHome(title: String, onHome: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,19 +62,10 @@ fun TopBarWithHome(title: String) {
             modifier = Modifier
                 .size(24.dp)
                 .clickable {
-                    // Действие при нажатии на иконку дом
+                    onHome()
                 }
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Image(
-            painter = painterResource(id = R.drawable.menu_svgrepo_com), // Замените на свою иконку меню
-            contentDescription = "Menu",
-            modifier = Modifier
-                .size(34.dp)
-                .clickable {
 
-                }
-        )
         Spacer(modifier = Modifier.width(16.dp))
 
         // Заголовок
